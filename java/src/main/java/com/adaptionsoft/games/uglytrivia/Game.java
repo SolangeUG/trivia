@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 public class Game {
 
+    private static final int QUESTIONS_PER_CATEGORY = 50;
+
     private ArrayList<String> players = new ArrayList<>();
     private int[] places = new int[6];
     private int[] purses  = new int[6];
@@ -17,18 +19,50 @@ public class Game {
     
     private int currentPlayer = 0;
     private boolean isGettingOutOfPenaltyBox;
-    
-    public  Game(){
-    	for (int i = 0; i < 50; i++) {
-			popQuestions.addLast("Pop Question " + i);
-			scienceQuestions.addLast(("Science Question " + i));
-			sportsQuestions.addLast(("Sports Question " + i));
-			rockQuestions.addLast(createRockQuestion(i));
+
+    enum Category {
+        POP("Pop", 0),
+        SCIENCE("Science", 1),
+        SPORTS("Sports", 2),
+        ROCK("Rock", 3);
+
+        private String description;
+        private int position;
+
+        Category(String description, int position) {
+            this.description = description;
+            this.position = position;
+        }
+
+        public static String of(int position) {
+            int wrapAround = position % numberOfCategories();
+            for (Category category: Category.values()) {
+                if (category.position == wrapAround) {
+                    return category.description;
+                }
+            }
+            return "";
+        }
+
+        private static int numberOfCategories() {
+            return Category.values().length;
+        }
+    }
+
+    public Game() {
+    	for (int i = 0; i < QUESTIONS_PER_CATEGORY; i++) {
+			popQuestions.addLast(questionFor(Category.POP, i));
+			scienceQuestions.addLast(questionFor(Category.SCIENCE, i));
+			sportsQuestions.addLast(questionFor(Category.SPORTS, i));
+			rockQuestions.addLast(questionFor(Category.ROCK, i));
     	}
     }
 
-	public String createRockQuestion(int index){
-		return "Rock Question " + index;
+	public String questionFor(Category category, int index) {
+        return String.format(
+                "%s Question %d",
+                category.description,
+                index);
 	}
 
     public boolean add(String playerName) {
@@ -37,12 +71,12 @@ public class Game {
 	    places[howManyPlayers()] = 0;
 	    purses[howManyPlayers()] = 0;
 	    inPenaltyBox[howManyPlayers()] = false;
-	    
+
 	    System.out.println(playerName + " was added");
 	    System.out.println("They are player number " + players.size());
 		return true;
 	}
-	
+
 	public int howManyPlayers() {
 		return players.size();
 	}
@@ -70,7 +104,7 @@ public class Game {
                 + places[currentPlayer]);
         System.out.println("The category is " + currentCategory());
         askQuestion();
-		
+
 	}
 
 	private void askQuestion() {
@@ -81,38 +115,9 @@ public class Game {
 		if (currentCategory().equals("Sports"))
 			System.out.println(sportsQuestions.removeFirst());
 		if (currentCategory().equals("Rock"))
-			System.out.println(rockQuestions.removeFirst());		
+			System.out.println(rockQuestions.removeFirst());
 	}
-	
 
-	enum Category {
-        POP("Pop", 0),
-        SCIENCE("Science", 1),
-        SPORTS("Sports", 2),
-        ROCK("Rock", 3);
-
-        private String description;
-        private int position;
-
-        Category(String description, int position) {
-            this.description = description;
-            this.position = position;
-        }
-
-        public static String of(int position) {
-            int remainder = position % numberOfCategories();
-            for (Category category: Category.values()) {
-                if (category.position == remainder) {
-                    return category.description;
-                }
-            }
-            return "";
-        }
-
-        private static int numberOfCategories() {
-            return Category.values().length;
-        }
-    }
 
 	private String currentCategory() {
         return Category.of(places[currentPlayer]);
