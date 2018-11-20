@@ -59,13 +59,19 @@ public class SomeTest {
 
     @Test
     public void test_against_goldenmaster() {
-        String goldemasterOutput = read_file_content("outputForSeed_1");
-        List<String> players = Arrays.asList("Bartomeu", "David", "Toni");
-        GoldenmasterRunner testRunner = new GoldenmasterRunner(players, "target/test-classes/testOutputForSeed_1", 1);
+        String seedsString = read_file_content("seeds");
+        String[] seeds = Arrays.stream(seedsString.split("\\|")).filter(seed -> !seed.isEmpty()).toArray(String[]::new);
 
-        testRunner.run();
-        String gameOutput = read_file_content("testOutputForSeed_1");
+        for (String seed : seeds) {
+            String goldemasterOutput = read_file_content("outputForSeed_" + seed);
+            List<String> players = Arrays.asList("Bartomeu", "David", "Toni");
+            GoldenmasterRunner testRunner = new GoldenmasterRunner(players,
+                    "target/test-classes/testOutputForSeed_" + seed, Long.valueOf(seed));
 
-        assertEquals(gameOutput, goldemasterOutput);
+            testRunner.run();
+            String gameOutput = read_file_content("testOutputForSeed_" + seed);
+
+            assertEquals(gameOutput, goldemasterOutput);
+        }
     }
 }
