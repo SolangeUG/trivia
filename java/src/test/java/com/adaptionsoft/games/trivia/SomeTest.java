@@ -1,8 +1,10 @@
 package com.adaptionsoft.games.trivia;
 
-import com.adaptionsoft.games.trivia.runner.GoldmasterRunner;
+import com.adaptionsoft.games.trivia.runner.GoldenmasterRunner;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -20,8 +22,8 @@ public class SomeTest {
         try {
             Path filePath = Paths.get(ClassLoader.getSystemResource(filename).toURI());
             return Files.readAllLines(filePath)
-                                    .stream()
-                                    .reduce("", (s, s2) -> s += s2);
+                    .stream()
+                    .reduce("", (s, s2) -> s += s2);
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
         }
@@ -30,19 +32,36 @@ public class SomeTest {
     }
 
     @Test
-    public void generate_goldmaster() {
-        long seed = 10000;
-        String fileName = "outputForSeed_" + seed;
-        List<String> players = Arrays.asList("Bartolomeu", "David", "Toni");
-        GoldmasterRunner testRunner = new GoldmasterRunner(players, fileName, seed);
-        testRunner.run();
+    public void generate_goldenmaster() {
+        String seedFileName = "src/test/resources/seeds";
+        StringBuilder seedBuilder = new StringBuilder();
+        for (int i = 0; i < 1000; ++i) {
+            long seed = (long) Math.ceil(1000000 * Math.random());
+            String fileName = "src/test/resources/outputForSeed_" + seed;
+            seedBuilder.append(seed).append("|");
+            List<String> players = Arrays.asList("Bartomeu", "David", "Toni");
+            GoldenmasterRunner testRunner = new GoldenmasterRunner(players, fileName, seed);
+            testRunner.run();
+        }
+        write_to_file(seedFileName, seedBuilder);
+    }
+
+    private void write_to_file(String seedFileName, StringBuilder seedBuilder) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(seedFileName);
+            fileOutputStream.write(seedBuilder.toString().getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void test_against_goldmaster() {
+    public void test_against_goldenmaster() {
         String goldemasterOutput = read_file_content("outputForSeed_1");
-        List<String> players = Arrays.asList("Bartolomeu", "David", "Toni");
-        GoldmasterRunner testRunner = new GoldmasterRunner(players, "target/test-classes/testOutputForSeed_1", 1);
+        List<String> players = Arrays.asList("Bartomeu", "David", "Toni");
+        GoldenmasterRunner testRunner = new GoldenmasterRunner(players, "target/test-classes/testOutputForSeed_1", 1);
 
         testRunner.run();
         String gameOutput = read_file_content("testOutputForSeed_1");
