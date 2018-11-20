@@ -10,20 +10,18 @@ import java.util.Random;
 
 public class GoldenmasterRunner {
 
-    private PrintStream stdOutput;
+    private PrintStream standardOutput;
     private List<String> players;
-    private String fileName;
     private long seed;
 
     public GoldenmasterRunner(List<String> players, String fileName, long seed) {
         this.players = players;
-        this.fileName = fileName;
         this.seed = seed;
-        redirectStdOut();
+        redirectStandardOutput(fileName);
     }
 
-    private void redirectStdOut() {
-        stdOutput = System.out;
+    private void redirectStandardOutput(String fileName) {
+        standardOutput = System.out;
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             System.setOut(new PrintStream(fileOutputStream));
@@ -55,7 +53,7 @@ public class GoldenmasterRunner {
 
         } while (notAWinner);
 
-        System.setOut(stdOutput);
+        System.setOut(standardOutput);
     }
 
 }

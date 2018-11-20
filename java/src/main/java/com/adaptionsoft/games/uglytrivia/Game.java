@@ -88,18 +88,38 @@ public class Game {
 			System.out.println(rockQuestions.removeFirst());		
 	}
 	
-	
+
+	enum Category {
+        POP("Pop", 0),
+        SCIENCE("Science", 1),
+        SPORTS("Sports", 2),
+        ROCK("Rock", 3);
+
+        private String description;
+        private int position;
+
+        Category(String description, int position) {
+            this.description = description;
+            this.position = position;
+        }
+
+        public static String of(int position) {
+            int remainder = position % numberOfCategories();
+            for (Category category: Category.values()) {
+                if (category.position == remainder) {
+                    return category.description;
+                }
+            }
+            return "";
+        }
+
+        private static int numberOfCategories() {
+            return Category.values().length;
+        }
+    }
+
 	private String currentCategory() {
-		if (places[currentPlayer] == 0) return "Pop";
-		if (places[currentPlayer] == 4) return "Pop";
-		if (places[currentPlayer] == 8) return "Pop";
-		if (places[currentPlayer] == 1) return "Science";
-		if (places[currentPlayer] == 5) return "Science";
-		if (places[currentPlayer] == 9) return "Science";
-		if (places[currentPlayer] == 2) return "Sports";
-		if (places[currentPlayer] == 6) return "Sports";
-		if (places[currentPlayer] == 10) return "Sports";
-		return "Rock";
+        return Category.of(places[currentPlayer]);
 	}
 
 	public boolean wasCorrectlyAnswered() {
