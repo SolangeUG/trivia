@@ -29,7 +29,9 @@
   "author": "Felix Blechschmitt",
   "license": "GPL-3.0",
   "dependencies": {
-    "typescript": "^2.9.2"
+    "typescript": "^2.9.2",
+    "lodash": ">=4.17.11",
+    "just-extend": ">=4.0.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
